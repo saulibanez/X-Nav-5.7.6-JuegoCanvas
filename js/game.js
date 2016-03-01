@@ -3,6 +3,9 @@
 // Slight modifications by Gregorio Robles <grex@gsyc.urjc.es>
 // to meet the criteria of a canvas class for DAT @ Univ. Rey Juan Carlos
 
+
+// http://juegos.canvas.ninja/
+
 // Create the canvas
 var canvas = document.createElement("canvas");
 var ctx = canvas.getContext("2d");
@@ -58,11 +61,14 @@ var princess = {};
 var princessesCaught = 0;
 
 var stone = {};
-var numstone=1;
+var numstone=3;
 
 var monster = {
 	speed:32
 };
+
+//var monsters[]=3;
+var stones=[5];
 
 // Handle keyboard controls-> keyDown quiere decir que he pulsado una tecla
 var keysDown = {};
@@ -91,10 +97,15 @@ var reset = function () {
 	monster.x = 32 + (Math.random() * (canvas.width - 100));
 	monster.y = 32 + (Math.random() * (canvas.height - 100));
 
-	if(touchPrincess(hero.x, hero.y)||touchStone(hero.x, hero.y)||touchStone(princess.x, princess.y)||
-		touchMonster(hero.x, hero.y)||touchMonster(princess.x, princess.y)||touchMonster(stone.x, stone.y)){
-			reset();
+var i;
+	for(i=0;i<numstone;i++){
+
+
+		if(touchPrincess(hero.x, hero.y)||touchStone(hero.x, hero.y)||touchStone(princess.x, princess.y)||
+			touchMonster(hero.x, hero.y)||touchMonster(princess.x, princess.y)||touchMonster(stone.x, stone.y)){
+				reset();
 		}
+	}
 };
 
 // Update game objects
@@ -142,17 +153,26 @@ var update = function (modifier) {
 
 	// Are they touching?
 	if (touchPrincess(hero.x, hero.y)) {
+		if(princessesCaught%10==0 && princessesCaught>9){
+			nextLevels();
+		}
 		++princessesCaught;
 		reset();
 	}else if(touchMonster(hero.x, hero.y)){
 		princessesCaught=0;
+		monster.speed = 32;
 		reset();
+		//alert("the end");
 	}
 
 };
 
+var nextLevels = function(){
+	monster.speed += 16;
+	++numstone;
+}
+
 var touchPrincess = function(px, py){
-	var i;
 	var touch = false;
 
 	if (px <= (princess.x + 25) && princess.x <= (px + 25) && py <= (princess.y + 25) && princess.y <= (py + 25)) {
@@ -163,18 +183,15 @@ var touchPrincess = function(px, py){
 }
 
 var touchStone = function (px, py){
-	var i;
 	var touch = false;
-
 	if (px <= (stone.x + 25) && stone.x <= (px + 25) && py <= (stone.y + 25) && stone.y <= (py + 25)) {
 		touch = true;
-	}
+}
 
 	return touch;
 }
 
 var touchMonster = function(px, py){
-	var i;
 	var touch = false;
 
 	if (px <= (monster.x + 25) && monster.x <= (px + 25) && py <= (monster.y + 25) && monster.y <= (py + 25)) {
@@ -200,17 +217,20 @@ var render = function () {
 
 	if (stoneReady) {
 		ctx.drawImage(stoneImage, stone.x, stone.y);	//para pintar a la piedra
-
-		// var i;
-		// for (i = 0; i < numstone; i++){
-		// 	ctx.drawImage(stoneImage, stone[i].x, stone[i].y);
-		// }
 	}
+
+/*
+	if (stoneReady) {
+		var i;
+		for (i = 0; i < numstone; i++){
+		 	ctx.drawImage(stoneImage, stones[i].x, stones[i].y);
+		}
+	}
+*/
 
 	if (monsterReady) {
 		ctx.drawImage(monsterImage, monster.x, monster.y);	//para pintar a la princesa
 	}
-
 
 	// Score
 	ctx.fillStyle = "rgb(250, 250, 250)";
